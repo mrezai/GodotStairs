@@ -19,7 +19,3 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0 )
 
 [node name="Camera" type="Camera" parent="Body/Head"]
 far = 1000.0
-
-[node name="JumpTimer" type="Timer" parent="."]
-wait_time = 0.1
-one_shot = true
