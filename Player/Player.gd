@@ -8,7 +8,7 @@ const SPEED_ON_STAIRS: float = 5.0
 var speed: float = SPEED_DEFAULT
 var gravity: float = 9.8
 var jump: float = 5.0
-const stairs_feeling_coefficient: float = 2.0
+const stairs_feeling_coefficient: float = 2.5
 
 var mouse_sense: float = 0.1
 var snap: Vector3 = Vector3.ZERO
@@ -25,7 +25,6 @@ onready var head_position: Vector3 = head.translation
 onready var body_euler_y = body.global_transform.basis.get_euler().y
 
 var head_offset: Vector3 = Vector3.ZERO
-var head_lerp_coefficient: float = 0.0
 var is_step: bool = false
 
 const WALL_MARGIN: float = 0.001
@@ -42,11 +41,9 @@ func _ready():
 	#hides the cursor
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
-	camera_target_position = head.translation
+	camera_target_position = camera.global_transform.origin
 	camera.set_as_toplevel(true)
 	camera.set_physics_interpolated(false)
-	camera.translation = camera_target_position
-	camera.rotation = head.rotation
 
 func _process(delta: float) -> void:
 	# Find the current interpolated transform of the target
@@ -199,9 +196,8 @@ func _physics_process(delta):
 	if is_step:
 		speed = SPEED_ON_STAIRS
 		head.translation -= head_offset
-		head_lerp_coefficient = clamp(velocity.length() * 0.4, 2, speed * 0.4)
 	else:
-		head_offset = head_offset.linear_interpolate(Vector3.ZERO, accel * delta * head_lerp_coefficient)
+		head_offset = head_offset.linear_interpolate(Vector3.ZERO, delta * speed * stairs_feeling_coefficient)
 		head.translation = head_position - head_offset
 		
 		if abs(head_offset.y) <= 0.01:

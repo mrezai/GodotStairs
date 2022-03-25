@@ -221,7 +221,7 @@ extents = Vector3( 3.57958, 0.254757, 1.50003 )
 [node name="TestStairs" type="Spatial"]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0 )
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, -0.975448, 0 )
 
 [node name="QodotMap" type="Spatial" parent="."]
 script = ExtResource( 4 )
