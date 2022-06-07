@@ -35,6 +35,8 @@ const STEP_CHECK_COUNT: int = 2
 var step_check_height: Vector3 = STEP_HEIGHT_DEFAULT / STEP_CHECK_COUNT
 
 var camera_target_position : Vector3 = Vector3()
+var camera_coefficient: float = 1.0
+var time_in_air: float = 0.0
 
 
 func _ready():
@@ -43,18 +45,32 @@ func _ready():
 	
 	camera_target_position = camera.global_transform.origin
 	camera.set_as_toplevel(true)
-	camera.set_physics_interpolated(false)
+	camera.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 func _process(delta: float) -> void:
 	# Find the current interpolated transform of the target
 	var tr : Transform = head.get_global_transform_interpolated()
 
 	# Provide some delayed smoothed lerping towards the target position 
-	camera_target_position = lerp(camera_target_position, tr.origin, delta * speed * stairs_feeling_coefficient)
+	camera_target_position = lerp(camera_target_position, tr.origin, delta * speed * stairs_feeling_coefficient * camera_coefficient)
 
 	#camera.translation = camera_target_position
 	camera.translation.x = tr.origin.x
-	camera.translation.y = camera_target_position.y
+
+	if is_on_floor():
+		time_in_air = 0.0
+		camera_coefficient = 1.0
+		camera.translation.y = camera_target_position.y
+	else:
+		time_in_air += delta
+		if time_in_air > 1.0:
+			camera_coefficient += delta
+			camera_coefficient = clamp(camera_coefficient, 2.0, 4.0)
+		else: 
+			camera_coefficient = 2.0
+			
+		camera.translation.y = camera_target_position.y
+
 	camera.translation.z = tr.origin.z
 	camera.rotation.x = head.rotation.x
 	camera.rotation.y = body.rotation.y + body_euler_y
@@ -195,10 +211,8 @@ func _physics_process(delta):
 		
 	if is_step:
 		speed = SPEED_ON_STAIRS
-		head.translation -= head_offset
 	else:
 		head_offset = head_offset.linear_interpolate(Vector3.ZERO, delta * speed * stairs_feeling_coefficient)
-		head.translation = head_position - head_offset
 		
 		if abs(head_offset.y) <= 0.01:
 			speed = SPEED_DEFAULT
