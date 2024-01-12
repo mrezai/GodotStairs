@@ -1,21 +1,59 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://x3l0v6tbskoe"]
 
-[ext_resource path="res://Player/Player.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://Player/Player.gd" id="1"]
 
-[sub_resource type="BoxShape" id=6]
-extents = Vector3( 0.3, 0.9, 0.3 )
+[sub_resource type="BoxShape3D" id="6"]
+margin = 0.0
+size = Vector3(0.6, 1.8, 0.6)
 
-[node name="Player" type="KinematicBody"]
-script = ExtResource( 1 )
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_juxiq"]
+height = 1.8
+radius = 0.3
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
-shape = SubResource( 6 )
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_sl4o1"]
+radius = 0.3
+height = 1.8
 
-[node name="Body" type="Spatial" parent="."]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sxnj7"]
 
-[node name="Head" type="Spatial" parent="Body"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0 )
+[sub_resource type="BoxMesh" id="BoxMesh_dhg0d"]
+material = SubResource("StandardMaterial3D_sxnj7")
+size = Vector3(0.1, 0.2, 0.5)
 
-[node name="Camera" type="Camera" parent="Body/Head"]
+[node name="Player" type="CharacterBody3D"]
+wall_min_slide_angle = 0.0872665
+floor_snap_length = 0.2
+script = ExtResource("1")
+
+[node name="CollisionShape3D1" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("6")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_juxiq")
+disabled = true
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_sl4o1")
+disabled = true
+
+[node name="Body" type="Node3D" parent="."]
+
+[node name="Head" type="Node3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="CameraMarker3D" type="Marker3D" parent="Body/Head"]
+
+[node name="Camera3D" type="Camera3D" parent="Body/Head/CameraMarker3D"]
+cull_mask = 1048571
+current = true
 far = 1000.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Body/Head/CameraMarker3D/Camera3D"]
+transform = Transform3D(0.196004, 0, 0, 0, 0.196004, 0, 0, 0, 0.196004, 0.109533, -0.12318, -0.216098)
+visible = false
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("BoxMesh_dhg0d")

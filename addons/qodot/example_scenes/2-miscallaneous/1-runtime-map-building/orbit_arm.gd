@@ -1,9 +1,9 @@
 class_name OrbitArm
-extends Spatial
+extends Node3D
 
-export(bool) var translate := true
-export(bool) var rotate := true
-export(bool) var zoom := true
+@export var should_translate := true
+@export var should_rotate := true
+@export var zoom := true
 
 var yaw = 0.0
 var pitch = 0.0
@@ -20,16 +20,16 @@ func _process(delta):
 func _input(event) -> void:
 	if event is InputEventMouseButton:
 		if not zoom: return
-		if event.button_index == BUTTON_WHEEL_UP:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			$Camera.translation.z -= 2.0
-		elif event.button_index == BUTTON_WHEEL_DOWN:
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			$Camera.translation.z += 2.0
 	elif event is InputEventMouseMotion:
-		if Input.is_mouse_button_pressed(BUTTON_MASK_LEFT):
-			if not translate: return
-			translation += $Camera.global_transform.basis.x * event.relative.x * -0.05
-			translation += $Camera.global_transform.basis.y * event.relative.y * 0.05
-		elif Input.is_mouse_button_pressed(BUTTON_MASK_RIGHT):
-			if not rotate: return
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			if not should_translate: return
+			translate($Camera.global_transform.basis.x * event.relative.x * -0.05)
+			translate($Camera.global_transform.basis.y * event.relative.y * 0.05)
+		elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+			if not should_rotate: return
 			yaw += event.relative.x * -0.002
 			pitch += event.relative.y * -0.002
