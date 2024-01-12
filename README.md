@@ -8,3 +8,4 @@ This is an implementation of stair stepping based on [Shifty's Godot Character M
 
 [Garbaj FPS Controller](https://github.com/GarbajYT/godot_updated_fps_controller) is used for basic movement.
 
+Old Godot 3.5+ compatible branch: [3.5](https://github.com/mrezai/GodotStairs/tree/godot-3.5)
