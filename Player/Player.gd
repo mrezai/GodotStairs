@@ -27,12 +27,15 @@ const STAIRS_FEELING_COEFFICIENT: float = 2.5
 const WALL_MARGIN: float = 0.001
 const STEP_DOWN_MARGIN: float = 0.01
 const STEP_HEIGHT_DEFAULT: Vector3 = Vector3(0, 0.6, 0)
+const STEP_HEIGHT_IN_AIR_DEFAULT: Vector3 = Vector3(0, 0.6, 0)
 const STEP_MAX_SLOPE_DEGREE: float = 40.0
 const STEP_CHECK_COUNT: int = 2
 const SPEED_CLAMP_AFTER_JUMP_COEFFICIENT = 0.4
 const SPEED_CLAMP_SLOPE_STEP_UP_COEFFICIENT = 0.4
 
-var step_check_height: Vector3 = STEP_HEIGHT_DEFAULT / STEP_CHECK_COUNT
+var step_height_main: Vector3
+var step_incremental_check_height: Vector3
+var is_enabled_stair_stepping_in_air: bool = true
 var is_jumping: bool = false
 var is_in_air: bool = false
 
@@ -126,21 +129,26 @@ func _physics_process(delta):
 	var step_result : StepResult = StepResult.new()
 	
 	is_step = step_check(delta, is_jumping, step_result)
-		
+	
 	if is_step:
+		var is_enabled_stair_stepping: bool = true
 		if step_result.is_step_up:
 			if is_in_air:
-				main_velocity *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
-				gravity_direction *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
+				if is_enabled_stair_stepping_in_air:
+					main_velocity *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
+					gravity_direction *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
+				else:
+					is_enabled_stair_stepping = false
 			else:
 				if direction.dot(step_result.normal) > 0:
 					global_transform.origin += main_velocity * delta
 					main_velocity *= SPEED_CLAMP_SLOPE_STEP_UP_COEFFICIENT
 					gravity_direction *= SPEED_CLAMP_SLOPE_STEP_UP_COEFFICIENT
 
-		global_transform.origin += step_result.diff_position
-		head_offset = step_result.diff_position
-		speed = SPEED_ON_STAIRS
+		if is_enabled_stair_stepping:
+			global_transform.origin += step_result.diff_position
+			head_offset = step_result.diff_position
+			speed = SPEED_ON_STAIRS
 	else:
 		head_offset = head_offset.lerp(Vector3.ZERO, delta * speed * STAIRS_FEELING_COEFFICIENT)
 		
@@ -160,11 +168,18 @@ func _physics_process(delta):
 func step_check(delta: float, is_jumping_: bool, step_result: StepResult):
 	var is_step: bool = false
 	
+	step_height_main = STEP_HEIGHT_DEFAULT
+	step_incremental_check_height = STEP_HEIGHT_DEFAULT / STEP_CHECK_COUNT
+	
+	if is_in_air and is_enabled_stair_stepping_in_air:
+		step_height_main = STEP_HEIGHT_IN_AIR_DEFAULT
+		step_incremental_check_height = STEP_HEIGHT_IN_AIR_DEFAULT / STEP_CHECK_COUNT
+		
 	if gravity_direction.y >= 0:
 		for i in range(STEP_CHECK_COUNT):
 			var test_motion_result: PhysicsTestMotionResult3D = PhysicsTestMotionResult3D.new()
 			
-			var step_height: Vector3 = STEP_HEIGHT_DEFAULT - i * step_check_height
+			var step_height: Vector3 = step_height_main - i * step_incremental_check_height
 			var transform3d: Transform3D = global_transform
 			var motion: Vector3 = step_height
 			var test_motion_params: PhysicsTestMotionParameters3D = PhysicsTestMotionParameters3D.new()
@@ -237,7 +252,7 @@ func step_check(delta: float, is_jumping_: bool, step_result: StepResult):
 			
 		if not is_player_collided:
 			transform3d.origin += motion
-			motion = -STEP_HEIGHT_DEFAULT
+			motion = -step_height_main
 			test_motion_params.from = transform3d
 			test_motion_params.motion = motion
 			
@@ -259,7 +274,7 @@ func step_check(delta: float, is_jumping_: bool, step_result: StepResult):
 			
 			if not is_player_collided:
 				transform3d.origin += motion
-				motion = -STEP_HEIGHT_DEFAULT
+				motion = -step_height_main
 				test_motion_params.from = transform3d
 				test_motion_params.motion = motion
 				
