@@ -6,7 +6,7 @@ extends CharacterBody3D
 @onready var camera_target = $Body/Head/CameraMarker3D
 @onready var head_position: Vector3 = head.position
 
-var mouse_sensetivity: float = 0.1
+var mouse_sensitivity: float = 0.1
 
 const ACCELERATION_DEFAULT: float = 7.0
 const ACCELERATION_AIR: float = 1.0
@@ -98,8 +98,8 @@ func _process(delta: float) -> void:
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		body.rotate_y(deg_to_rad(-event.relative.x * mouse_sensetivity))
-		head.rotate_x(deg_to_rad(-event.relative.y * mouse_sensetivity))
+		body.rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity))
+		head.rotate_x(deg_to_rad(-event.relative.y * mouse_sensitivity))
 		head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
 
 func _physics_process(delta):
