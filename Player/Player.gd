@@ -9,11 +9,13 @@ extends CharacterBody3D
 func update_hull():
 	match active_shape:
 		"Box":
-			%HullCylinder.disabled = true
-			%HullBox.disabled = false
+			if hull_box and hull_cylinder:
+				hull_cylinder.disabled = true
+				hull_box.disabled = false
 		"Cylinder":
-			%HullBox.disabled = true
-			%HullCylinder.disabled = false
+			if hull_box and hull_cylinder:
+				hull_box.disabled = true
+				hull_cylinder.disabled = false
 
 @onready var body = $Body
 @onready var head = $Body/Head
