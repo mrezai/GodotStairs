@@ -1,5 +1,24 @@
 extends CharacterBody3D
 
+@export_enum("Box", "Cylinder", "Capsule" ) var active_shape : String = "Box":
+	set(value):
+		active_shape = value
+		if not Engine.is_editor_hint():
+			init_hull()
+
+func init_hull():
+	%HullBox.disabled = true
+	%HullCylinder.disabled = true
+	%HullCapsule.disabled = true
+	
+	match active_shape:
+		"Box":
+			%HullBox.disabled = false
+		"Cylinder":
+			%HullCylinder.disabled = false
+		"Capsule":
+			%HullCapsule.disabled = false
+
 @onready var body = $Body
 @onready var head = $Body/Head
 @onready var camera = $Body/Head/CameraMarker3D/Camera3D
@@ -55,6 +74,7 @@ class StepResult:
 
 
 func _ready():
+	init_hull()
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	camera_target_position = camera.global_transform.origin
@@ -101,6 +121,12 @@ func _input(event):
 		body.rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity))
 		head.rotate_x(deg_to_rad(-event.relative.y * mouse_sensitivity))
 		head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+	
+	if Input.is_action_just_pressed("ui_cancel"):
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		elif Input.mouse_mode ==  Input.MOUSE_MODE_VISIBLE:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _physics_process(delta):
 	update_camera = true
