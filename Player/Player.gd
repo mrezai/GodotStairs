@@ -1,23 +1,19 @@
 extends CharacterBody3D
 
-@export_enum("Box", "Cylinder", "Capsule" ) var active_shape : String = "Box":
+@export_enum("Box", "Cylinder") var active_shape : String = "Box":
 	set(value):
 		active_shape = value
 		if not Engine.is_editor_hint():
 			init_hull()
 
-func init_hull():
-	%HullBox.disabled = true
-	%HullCylinder.disabled = true
-	%HullCapsule.disabled = true
-	
+func update_hull():
 	match active_shape:
 		"Box":
+			%HullCylinder.disabled = true
 			%HullBox.disabled = false
 		"Cylinder":
+			%HullBox.disabled = true
 			%HullCylinder.disabled = false
-		"Capsule":
-			%HullCapsule.disabled = false
 
 @onready var body = $Body
 @onready var head = $Body/Head
@@ -74,7 +70,7 @@ class StepResult:
 
 
 func _ready():
-	init_hull()
+	update_hull()
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	camera_target_position = camera.global_transform.origin
