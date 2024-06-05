@@ -10,10 +10,6 @@ size = Vector3(0.6, 1.8, 0.6)
 height = 1.8
 radius = 0.3
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_sl4o1"]
-radius = 0.3
-height = 1.8
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sxnj7"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_dhg0d"]
@@ -34,12 +30,6 @@ shape = SubResource("6")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CylinderShape3D_juxiq")
-disabled = true
-
-[node name="HullCapsule" type="CollisionShape3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_sl4o1")
 disabled = true
 
 [node name="Body" type="Node3D" parent="."]
