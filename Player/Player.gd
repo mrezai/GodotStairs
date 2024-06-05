@@ -7,13 +7,12 @@ extends CharacterBody3D
 			update_hull()
 
 func update_hull():
-	match active_shape:
-		"Box":
-			if hull_box and hull_cylinder:
+	if hull_box and hull_cylinder:
+		match active_shape:
+			"Box":
 				hull_cylinder.disabled = true
 				hull_box.disabled = false
-		"Cylinder":
-			if hull_box and hull_cylinder:
+			"Cylinder":
 				hull_box.disabled = true
 				hull_cylinder.disabled = false
 
