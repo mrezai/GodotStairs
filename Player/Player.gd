@@ -4,7 +4,7 @@ extends CharacterBody3D
 	set(value):
 		active_shape = value
 		if not Engine.is_editor_hint():
-			init_hull()
+			update_hull()
 
 func update_hull():
 	match active_shape:
