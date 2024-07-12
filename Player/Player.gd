@@ -132,18 +132,8 @@ func _physics_process(delta):
 	
 	if is_step:
 		var is_enabled_stair_stepping: bool = true
-		if step_result.is_step_up:
-			if is_in_air:
-				if is_enabled_stair_stepping_in_air:
-					main_velocity *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
-					gravity_direction *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
-				else:
-					is_enabled_stair_stepping = false
-			else:
-				if direction.dot(step_result.normal) > 0:
-					global_transform.origin += main_velocity * delta
-					main_velocity *= SPEED_CLAMP_SLOPE_STEP_UP_COEFFICIENT
-					gravity_direction *= SPEED_CLAMP_SLOPE_STEP_UP_COEFFICIENT
+		if step_result.is_step_up and is_in_air and not is_enabled_stair_stepping_in_air:
+			is_enabled_stair_stepping = false
 
 		if is_enabled_stair_stepping:
 			global_transform.origin += step_result.diff_position
@@ -161,6 +151,11 @@ func _physics_process(delta):
 	set_max_slides(6)
 	move_and_slide()
 	
+	if is_step and step_result.is_step_up and is_enabled_stair_stepping_in_air:
+		if is_in_air or direction.dot(step_result.normal) > 0:
+			main_velocity *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
+			gravity_direction *= SPEED_CLAMP_AFTER_JUMP_COEFFICIENT
+
 	if is_jumping:
 		is_jumping = false
 		is_in_air = true
